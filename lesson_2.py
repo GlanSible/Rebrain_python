@@ -23,9 +23,3 @@ log_mess = another_second_string_list[-2]
 err_mess = another_second_string_list[-1]
 
 print(f'The PC "{pc_name}" receive message from service "{svc_name}" what says "{log_mess}" because "{err_mess}" at "{log_date}"')
-'''
-1.6. Выделите из строки значения часов, минут и секунд, суммируйте эти 3 числа и выведите полученное число на экран.
-Нужно сформировать и вывести сообщение в таком формате:
-
-The PC "<имя ПК>" receive message from service "<имя сервиса>" what says "<сообщение>" because "<причина ошибки>" at <дата, время>
-'''
