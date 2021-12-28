@@ -13,8 +13,8 @@ list_hdd = [
 req_hdd = int(input("Choose hdd number (from 1 to 7): "))
 
 real_hdd_number = req_hdd - 1
-hdd_total_size = int(list_hdd[real_hdd_number]['total'] / 1024 ** 2)
-hdd_used_space = int(list_hdd[real_hdd_number]['used'] / 1024 ** 2)
+hdd_total_size = int(list_hdd[real_hdd_number]['total'] / 1024 ** 3)
+hdd_used_space = int(list_hdd[real_hdd_number]['used'] / 1024 ** 3)
 gb_free_space = hdd_total_size - hdd_used_space
 perc_free_space = 100 - int(hdd_used_space / hdd_total_size * 100)
 print(hdd_total_size, hdd_used_space, gb_free_space, perc_free_space)
