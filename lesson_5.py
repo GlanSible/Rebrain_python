@@ -36,22 +36,17 @@ print(f"3: {[ dict['time'] for dict in list_dict]}")
 
 
 # 4)
-for dict in list_dict:
-    date_list = dict['time'].split(' ')
-    dict['date'] = ' '.join(date_list[:2])
-    dict['time'] = date_list[2]
-print(f"4: {[ dict['time'] for dict in list_dict]}")
+for d in list_dict:
+    date_list = d['time'].split(' ')
+    d['date'] = ' '.join(date_list[:2])
+    d['time'] = date_list[2]
+print(f"4: {[ d['time'] for d in list_dict]}")
 
 
 # 5)
-print(f"5: {[dict['message'] for dict in list_dict if dict['pc_name'] == 'PC0078']}")
+print(f"5: {[d['message'] for d in list_dict if d['pc_name'] == 'PC0078']}")
 
 
 # 6,7)
-log_dict = {}
-iter = 100
-for dict in list_dict:
-    log_dict[iter] = dict['message']
-    iter += 1
-
-print(f"7: {log_dict[104]}")
+log_dict = dict(enumerate(list_dict, start = 100))
+print(f"7: {log_dict[104]['message']}")
