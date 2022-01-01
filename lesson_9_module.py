@@ -1,5 +1,4 @@
 # Rebrain_Python lesson 9 module file
-
 from os import getlogin
 from psutil import virtual_memory
 
