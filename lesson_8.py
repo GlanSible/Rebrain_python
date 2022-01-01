@@ -13,7 +13,7 @@ list_hdd = [
 
 
 # 2)
-def func2(list_hdd):  
+def func2(list_hdd):
     for d in list_hdd:
         id_status = {}
         id_status['id'] = d['id']
@@ -29,11 +29,11 @@ def func2(list_hdd):
             id_status.update(memory_status = 'memory_not_enough')
         else:
             id_status.update(memory_status = 'memory_ok')
-        yield id_status  
+        yield id_status
 
 
 # 3,4)
-list_3 = [ dict(k, **v) for k, v in zip(list_hdd, func2(list_hdd)) ]
+list_3 = [dict(k, **v) for k, v in zip(list_hdd, func2(list_hdd))]
 print(f"4: {list_3}")
 
 
@@ -61,7 +61,7 @@ print(f"7: {list(filter(lambda a: a[16:24] == 'PC-00102', log_list))}")
 
 
 # 8)
-splitted_list = list(map( lambda a: a.split(" "), log_list))
+splitted_list = list(map(lambda a: a.split(" "), log_list))
 
 list8 = [' '.join(sl[5:]) for sl in splitted_list if 'kernel' in sl[4]]
 print(f"8: {list8}")
