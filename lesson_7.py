@@ -25,20 +25,15 @@ def func21(out_list, *args):
         log_dict['service_name'] = tmp_list[4].removesuffix(':')
         log_dict['message'] = ' '.join(tmp_list[5:])
         out_list.append(log_dict)
-    print(f"2: {out_list}")
+    print(f"{out_list}")
 func21(log_list, "May 20 09:16:28 PC0078 systemd[1]: Starting PackageKit Daemon...", "May 20 11:01:12 PC-00102 PackageKit: daemon start")
 
 
 # 3)
-def func3(log_list, *args):
-    empty_list = []
-    iter = 1
-    for line in log_list:
-        if iter in args:
-            empty_list.append(line)
-        iter +=1
-    print(f"3: {empty_list}")
-func3(log_list, 1, 2, 4)
+empty_list = []
+func21(empty_list, 'May 18 11:59:18 PC-00102 plasmashell[1312]: kf.plasma.core: findInCache with a lastModified timestamp of 0 is deprecated', \
+    'May 18 13:06:54 ideapad kwin_x11[1273]: Qt Quick Layouts: Detected recursive rearrange. Aborting after two iterations.', \
+    'May 20 11:01:12 PC-00102 PackageKit: daemon start')
 
 
 # 4,5,6)
@@ -76,4 +71,4 @@ def func5(list_hdd):
     id_status['memory_critical'] = memory_critical
     return id_status
 
-print(func5(list_hdd))
+print(f"6: {func5(list_hdd)}")
