@@ -1,6 +1,5 @@
 # Rebrain_Python lesson 11
 import os
-from psutil import virtual_memory
 
 
 # 1,2,3)
