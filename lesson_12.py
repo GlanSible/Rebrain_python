@@ -29,9 +29,9 @@ class PC_advanced(PC_memory):
         return True if self.ld_avg_1m > self.ld_avg_15m * 3 else False
     def __call__(self, line='memory'):
         if str(line) == 'memory':
-            return self.is_enough_memory 
+            return self.is_enough_memory() 
         elif str(line) == 'load': 
-            return self.is_overloaded
+            return self.is_overloaded()
         else:
             return None
 
@@ -39,5 +39,4 @@ class PC_advanced(PC_memory):
 # 4,5,6)
 pc_adv = PC_advanced('LEADERSCOMP', 'gleb.obraztsov', '17129029632', '6533365760', 2, 1, '38')
 print(f"5: {pc_adv.is_overloaded()}")
-class_as_func = pc_adv()
-print(f"6: {class_as_func()}")     
+print(f"6: {pc_adv()}")     
