@@ -2,8 +2,13 @@ from django.shortcuts import render
 
 # Create your views here.
 from rest_framework import generics
-from .serializer import ServerSerializer
+from .serializer import ServerSerializer, ServerSerializerShort
 from .models import Server
+
+class ServerViewSetShort(generics.ListAPIView):
+
+    queryset = Server.objects.all()
+    serializer_class = ServerSerializerShort
 
 class ServerViewSet(generics.ListAPIView):
 
