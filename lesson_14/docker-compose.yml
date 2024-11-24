@@ -1,0 +1,30 @@
+# docker-compose.yml
+version: '3'
+
+services:
+
+  migrate:
+    build: .
+    container_name: 'migrate'
+    command: >
+      /bin/sh -c "python3 config/manage.py makemigrations --force-color --no-input -v 3
+      && python3 config/manage.py makemigrations --merge --no-input -v 3
+      && python3 config/manage.py migrate --force-color -v 3
+      && python3 config/manage.py collectstatic --noinput
+      && python3 config/manage.py createsuperuser --noinput"
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=lesson_14
+      - DJANGO_SUPERUSER_PASSWORD=lesson_14
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+
+  gunicorn:
+    image: lesson_14_migrate
+    container_name: 'gunicorn'
+    restart: always
+    command: >
+      /bin/sh -c "cd config && python3 manage.py collectstatic --noinput 
+      && python3 -m gunicorn -b 0.0.0.0:8000 config.wsgi --reload"
+    ports:
+      - 8000:8000
+    depends_on:
+      - migrate
