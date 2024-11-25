@@ -2,10 +2,18 @@ import psutil
 import requests
 import socket
 import json
+import os
+import platform
 
 # Define host_info dict as data
-
 host_full_info = {}
+
+def host_information():
+    host_information = {}
+    host_information['name'] = platform.node()
+    host_information['platform'] = platform.system()
+    host_full_info['host_information'] = host_information
+host_information()
 
 def network_info():
     iface_dict = {}
@@ -21,6 +29,15 @@ def network_info():
             pass
         host_full_info['network'] = [iface_dict, ip_dict]
 network_info()
+
+def disk():
+    disk_list = []
+    for sdiskpart in psutil.disk_partitions():
+        if not str(sdiskpart.device).startswith('/dev/loop'):
+            
+            disk_list += sdiskpart._asdict()
+    host_full_info['disk'] = disk_list
+disk()
 
 def load_average():
     load_average = dict(zip(['1 min', '5 min', '15 min'], psutil.getloadavg()))
