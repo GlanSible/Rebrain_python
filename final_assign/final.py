@@ -34,28 +34,28 @@ def disk():
     disk_list = []
     for sdiskpart in psutil.disk_partitions():
         if not str(sdiskpart.device).startswith('/dev/loop'):
-            
-            disk_list += sdiskpart._asdict()
-    host_full_info['disk'] = disk_list
+            disk_list.append(sdiskpart._asdict())
+            host_full_info['disk'] = disk_list
 disk()
+
+def memory():
+    #print(psutil.virtual_memory())
+    host_full_info['memory'] = psutil.virtual_memory()._asdict()
+memory()
+
+def cpu():
+    cpu ={}
+    cpu['cpu_cores'] = psutil.cpu_count()
+    cpu['cpu_physical_cores'] = psutil.cpu_count(logical=False)
+    cpu['cpu_freqency'] = psutil.cpu_freq()
+    host_full_info['cpu'] = cpu
+cpu()
 
 def load_average():
     load_average = dict(zip(['1 min', '5 min', '15 min'], psutil.getloadavg()))
     host_full_info['load_average'] = load_average
 load_average()
-'''
-def simple_psutil():
-    host_information = {}
-    # Used Socket module due to WSL having issues with psutil.users() output
-    host_information['name'] = str(socket.gethostname())
-    host_information['ip_address'] = str(requests.get('https://ifconfig.me/ip').text)
-    host_information['description'] = str('local IP address is ' + network_info())
 
-    # convert data to json
-    host_information = json.dumps(host_information)
-    loaded_host_information = json.loads(host_information)
-    return loaded_host_information
-'''
 print(host_full_info)
 
 
