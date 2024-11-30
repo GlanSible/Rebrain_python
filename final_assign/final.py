@@ -33,8 +33,8 @@ def network_info():
         if not snicaddr.startswith(tuple(addr_templates)):
             iface_dict['interface_name'] = snicaddr
             iface_dict['interface_status'] = 'up' if psutil.net_if_stats()[snicaddr][0] else 'down'
-            ip_dict['public_address'] = str(requests.get('https://ifconfig.me/ip').text)
             ip_dict['local_address'] = psutil.net_if_addrs()[snicaddr][0][1]
+            ip_dict['public_address'] = str(requests.get('https://ifconfig.me/ip').text)
         else:
             pass
         host_full_info['network'] = [iface_dict, ip_dict]
@@ -57,8 +57,14 @@ disk()
 
 def memory():
     logging.info("Gathering RAM information:")
-    # need to switch values to Mb
     host_full_info['memory'] = psutil.virtual_memory()._asdict()
+    # Iterate over memory dict to transform bytes into MiB
+    for k, v in host_full_info['memory'].items():
+        if v <= 100:
+            pass
+        else:
+            v = round(v / 1024 ** 2)
+            host_full_info['memory'][k] = v
 
 
 memory()
@@ -80,18 +86,23 @@ def load_average():
     logging.info("Gathering LA information:")
     load_average = dict(zip(['1 min', '5 min', '15 min'], psutil.getloadavg()))
     host_full_info['load_average'] = load_average
+    # Round float values up to 2 signs
+    for k, v in host_full_info['load_average'].items():
+        v = round(v, 2)
+        host_full_info['load_average'][k] = v
 
 
 load_average()
 
 
 jsoned_host_full_info = json.dumps(host_full_info, indent=True)
-# logging.info(f"""Gathered info {host_full_info['host_information']['name']} server: {jsoned_host_full_info}""")
+logging.info(f"""Gathered info {host_full_info['host_information']['name']} server:\n{jsoned_host_full_info}""")
 
 loaded_host_full_info = json.loads(jsoned_host_full_info)
 
 try:
-    r = requests.post('http://127.0.0.1:8000/api/servers/add',
+    logging.info("Sending data to Django API.")
+    r = requests.post('http://127.0.0.1:8000/api/servers/add-extended',
                        json=loaded_host_full_info)
     r.raise_for_status()
 except requests.Timeout as e:
@@ -103,3 +114,5 @@ except requests.RequestException as e:
         logging.error(f"{e}")
     else:
         logging.error(f"Request exception: {e}")
+else:
+    logging.info("Data has been sucessfully sent.")
