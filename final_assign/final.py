@@ -4,7 +4,7 @@ import json
 import platform
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Define host_full_info dict as data structure
@@ -86,12 +86,20 @@ load_average()
 
 
 jsoned_host_full_info = json.dumps(host_full_info, indent=True)
-logging.info(f"""Gathered info {host_full_info['host_information']['name']} server:
-{jsoned_host_full_info}""")
+# logging.info(f"""Gathered info {host_full_info['host_information']['name']} server: {jsoned_host_full_info}""")
 
 loaded_host_full_info = json.loads(jsoned_host_full_info)
 
-r = requests.post('http://127.0.0.1:8000/api/servers/add',
-                  json=loaded_host_full_info)
-
-print(f"Status Code: {r.status_code}, Response: {r.json()}")
+try:
+    r = requests.post('http://127.0.0.1:8000/api/servers/add',
+                       json=loaded_host_full_info)
+    r.raise_for_status()
+except requests.Timeout as e:
+    logging.error(f"Server timeout: {e}")
+except requests.ConnectionError as e:
+    logging.error(f"Connection error: {e}")
+except requests.RequestException as e:
+    if r.status_code == 400:
+        logging.error(f"{e}")
+    else:
+        logging.error(f"Request exception: {e}")

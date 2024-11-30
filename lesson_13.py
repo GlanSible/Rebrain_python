@@ -13,7 +13,7 @@ class PC_memory:
         try:
             self.mem_t = int(mem_t)
             self.mem_u = int(mem_u)
-            if self.mem_t < 0 or self.mem_u < 0 or self.mem_u > self.mem_t: raise ValueError 
+            if self.mem_t < 0 or self.mem_u < 0 or self.mem_u > self.mem_t: raise ValueError
         except ValueError:
             print('wrong memory value, default value used')
             self.mem_t = 107374182400
