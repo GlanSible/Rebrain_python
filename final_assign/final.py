@@ -7,24 +7,19 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Define host_full_info dict as data structure
-host_full_info = {}
 
-logging.info("Start to gather info about system:")
+def host_full_info():
+    # Define host_full_info dict as data structure
+    host_full_info = {}
 
+    logging.info("Start to gather info about system:")
 
-def host_information():
     logging.info("Gathering Host information:")
     host_information = {}
     host_information['name'] = platform.node()
     host_information['platform'] = platform.system()
     host_full_info['host_information'] = host_information
 
-
-host_information()
-
-
-def network_info():
     logging.info("Gathering Network information:")
     iface_dict = {}
     ip_dict = {}
@@ -39,11 +34,6 @@ def network_info():
             pass
         host_full_info['network'] = [iface_dict, ip_dict]
 
-
-network_info()
-
-
-def disk():
     logging.info("Gathering Disk information:")
     disk_list = []
     for sdiskpart in psutil.disk_partitions():
@@ -51,11 +41,6 @@ def disk():
             disk_list.append(sdiskpart._asdict())
             host_full_info['disk'] = disk_list
 
-
-disk()
-
-
-def memory():
     logging.info("Gathering RAM information:")
     host_full_info['memory'] = psutil.virtual_memory()._asdict()
     # Iterate over memory dict to transform bytes into MiB
@@ -66,11 +51,6 @@ def memory():
             v = round(v / 1024 ** 2)
             host_full_info['memory'][k] = v
 
-
-memory()
-
-
-def cpu():
     logging.info("Gathering CPU information:")
     cpu = {}
     cpu['cpu_cores'] = psutil.cpu_count()
@@ -78,11 +58,6 @@ def cpu():
     cpu['cpu_freqency'] = psutil.cpu_freq()
     host_full_info['cpu'] = cpu
 
-
-cpu()
-
-
-def load_average():
     logging.info("Gathering LA information:")
     load_average = dict(zip(['1 min', '5 min', '15 min'], psutil.getloadavg()))
     host_full_info['load_average'] = load_average
@@ -91,20 +66,24 @@ def load_average():
         v = round(v, 2)
         host_full_info['load_average'][k] = v
 
+    logging.info("Serializing gathered data.")
+    jsoned_host_full_info = json.dumps(host_full_info, indent=True)
 
-load_average()
+    logging.info(f"""Gathered info about {host_full_info['host_information']['name']} server:
+                 {jsoned_host_full_info}""")
 
+    loaded_host_full_info = json.loads(jsoned_host_full_info)
 
-jsoned_host_full_info = json.dumps(host_full_info, indent=True)
-logging.info(f"""Gathered info {host_full_info['host_information']['name']} server:\n{jsoned_host_full_info}""")
+    return loaded_host_full_info
 
-loaded_host_full_info = json.loads(jsoned_host_full_info)
 
 try:
-    logging.info("Sending data to Django API.")
-    r = requests.post('http://127.0.0.1:8000/api/servers/add-extended',
-                       json=loaded_host_full_info)
+    r = requests.post(
+        'http://127.0.0.1:8000/api/servers/add-extended',
+        json=host_full_info())
+
     r.raise_for_status()
+
 except requests.Timeout as e:
     logging.error(f"Server timeout: {e}")
 except requests.ConnectionError as e:
