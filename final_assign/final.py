@@ -4,11 +4,18 @@ import socket
 import json
 import os
 import platform
+import logging
 
-# Define host_info dict as data
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Define host_full_info dict as data structure
 host_full_info = {}
 
+logging.info("Start to gather info about system:")
+
 def host_information():
+    logging.info("Gathering Host information:")
     host_information = {}
     host_information['name'] = platform.node()
     host_information['platform'] = platform.system()
@@ -16,6 +23,7 @@ def host_information():
 host_information()
 
 def network_info():
+    logging.info("Gathering Network information:")
     iface_dict = {}
     ip_dict = {}
     addr_templates = ['lo', 'docker', 'br-', 'veth']
@@ -31,6 +39,7 @@ def network_info():
 network_info()
 
 def disk():
+    logging.info("Gathering Disk information:")
     disk_list = []
     for sdiskpart in psutil.disk_partitions():
         if not str(sdiskpart.device).startswith('/dev/loop'):
@@ -39,11 +48,13 @@ def disk():
 disk()
 
 def memory():
-    #print(psutil.virtual_memory())
+    logging.info("Gathering RAM information:")
+    # need to switch values to Mb
     host_full_info['memory'] = psutil.virtual_memory()._asdict()
 memory()
 
 def cpu():
+    logging.info("Gathering CPU information:")
     cpu ={}
     cpu['cpu_cores'] = psutil.cpu_count()
     cpu['cpu_physical_cores'] = psutil.cpu_count(logical=False)
@@ -52,12 +63,12 @@ def cpu():
 cpu()
 
 def load_average():
+    logging.info("Gathering LA information:")
     load_average = dict(zip(['1 min', '5 min', '15 min'], psutil.getloadavg()))
     host_full_info['load_average'] = load_average
 load_average()
 
 print(host_full_info)
-
 
 # r = requests.post('http://127.0.0.1:8000/api/servers/add', json=simple_psutil())
 
@@ -65,10 +76,10 @@ print(host_full_info)
 
 '''
 Программа должна обрабатывать данные о системе, полученные от утилиты psutil, и отправлять их на сервер с интервалом в 1 минуту в формате:
-{'host_information': {'sysname': ..., 'hostname' : ...}, 
+{'host_information': {'sysname': ..., 'hostname' : ...},
  'network': [{'interface': up/down, 'mtu': ... }...],
  'disk': [{'disk: ..., 'mountpoint': ..., 'file_system_type', 'total': ..., 'used': ....} ],
- 'memory': {'memory_total': ..., 'memory_used': ..., 'memory_percent': ...}, 
- 'cpu': {'cpu_cores': ..., 'cpu_physical_cores': ..., 'cpu_freqency': {...}}, 
+ 'memory': {'memory_total': ..., 'memory_used': ..., 'memory_percent': ...},
+ 'cpu': {'cpu_cores': ..., 'cpu_physical_cores': ..., 'cpu_freqency': {...}},
  'load_average': {'1 min': ..., '5 min': ..., '15 min': ...}}}
 '''
